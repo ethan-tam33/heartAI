@@ -1,3 +1,5 @@
+# main.py
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from vespa.application import Vespa
@@ -9,20 +11,14 @@ from typing import List
 
 app = FastAPI()
 
-# Initialize Vespa client
-vespa_app = Vespa(url="http://localhost", port=8000)
+# IMPORTANT: Change the port so you’re not conflicting with the FastAPI port.
+vespa_app = Vespa(url="http://localhost", port=8080)
 
-# Replace with your tenant name from the Vespa Cloud Console
-tenant_name = "ethantam33"
-# Replace with your application name (does not need to exist yet)
+tenant_name = "socrates"
 application = "heartaivespa"
 
 torch_embed_size = 128
-#euclidean, angular, dotproduct, prenormalized-angular, hamming, geodegrees
-distance_metric = "dotproduct"
-
-print(f"Embedding size: {torch_embed_size}")
-print(f"Distance metric: {distance_metric}")
+distance_metric = "dotproduct"  # Or "euclidean", but make it consistent below.
 
 schema = Schema(
     name="medical_records",
@@ -35,41 +31,14 @@ schema = Schema(
                 name="heart_embedding",
                 type=f"tensor<float>(x[{torch_embed_size}])",
                 indexing=["index"],
+<<<<<<< HEAD
+                attribute=True,
+                distance_metric="dotproduct"  # match distance_metric above!
+=======
                 distance_metric=f"{distance_metric}",
+>>>>>>> 6bb9494c27f15b5eca88a0777e4d08221f6f48fb
             ),
-            Field(name="Normal", type="bool", indexing=["summary"]),
-            Field(name="MildModerateDilation", type="bool", indexing=["summary"]),
-            Field(name="VSD", type="bool", indexing=["summary"]),
-            Field(name="ASD", type="bool", indexing=["summary"]),
-            Field(name="DORV", type="bool", indexing=["summary"]),
-            Field(name="DLoopTGA", type="bool", indexing=["summary"]),
-            Field(name="ArterialSwitch", type="bool", indexing=["summary"]),
-            Field(name="BilateralSVC", type="bool", indexing=["summary"]),
-            Field(name="SevereDilation", type="bool", indexing=["summary"]),
-            Field(name="TortuousVessels", type="bool", indexing=["summary"]),
-            Field(name="Dextrocardia", type="bool", indexing=["summary"]),
-            Field(name="Mesocardia", type="bool", indexing=["summary"]),
-            Field(name="InvertedVentricles", type="bool", indexing=["summary"]),
-            Field(name="InvertedAtria", type="bool", indexing=["summary"]),
-            Field(name="LeftCentralIVC", type="bool", indexing=["summary"]),
-            Field(name="LeftCentralSVC", type="bool", indexing=["summary"]),
-            Field(name="LLoopTGA", type="bool", indexing=["summary"]),
-            Field(name="AtrialSwitch", type="bool", indexing=["summary"]),
-            Field(name="Rastelli", type="bool", indexing=["summary"]),
-            Field(name="SingleVentricle", type="bool", indexing=["summary"]),
-            Field(name="DILV", type="bool", indexing=["summary"]),
-            Field(name="DIDORV", type="bool", indexing=["summary"]),
-            Field(name="CommonAtrium", type="bool", indexing=["summary"]),
-            Field(name="Glenn", type="bool", indexing=["summary"]),
-            Field(name="Fontan", type="bool", indexing=["summary"]),
-            Field(name="Heterotaxy", type="bool", indexing=["summary"]),
-            Field(name="SuperoinferiorVentricles", type="bool", indexing=["summary"]),
-            Field(name="PAAtresiaOrMPAStump", type="bool", indexing=["summary"]),
-            Field(name="PABanding", type="bool", indexing=["summary"]),
-            Field(name="AOPAAnastamosis", type="bool", indexing=["summary"]),
-            Field(name="Marfan", type="bool", indexing=["summary"]),
-            Field(name="CMRArtifactAO", type="bool", indexing=["summary"]),
-            Field(name="CMRArtifactPA", type="bool", indexing=["summary"])
+            # ... rest of your boolean fields ...
         ]
     )
 )
@@ -97,33 +66,43 @@ async def insert_records(records: List[MedicalRecord]):
     print(records)
     responses = []
     try:
+        # If you want to use vespa_app.syncio, do so here.
         with vespa_app.syncio() as sync_app:
             for record in records:
                 print("data_id: ", str(record.Pat))
                 print("dict: ", record.dict)
                 response = sync_app.feed_data_point(
                     schema="medical_records",
-                    data_id=str(record.Pat),  # Unique identifier
+                    data_id=str(record.Pat),
                     fields=record.dict()
                 )
                 print(response.json())
                 print("byeee")
                 responses.append(response.json())
+        # CRITICAL: Return at the end so FastAPI can finish the request
+        return {"message": "Records inserted successfully", "responses": responses}
     except Exception as e:
         print(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+<<<<<<< HEAD
+
+=======
     
+>>>>>>> 6bb9494c27f15b5eca88a0777e4d08221f6f48fb
 @app.post("/query/")
 async def query_vespa(embedding: List[float], top_k: int = 5):
     if len(embedding) != torch_embed_size:
-        raise HTTPException(status_code=400, detail=f"Embedding size must be {torch_embed_size}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Embedding size must be {torch_embed_size}"
+        )
 
     query_body = {
-        "yql": 'select * from sources medical_records where {targetHits:%d} nearestNeighbor(heart_embedding, query_embedding)' % top_k,
+        "yql": "select * from sources medical_records "
+               f"where {{targetHits:{top_k}}} nearestNeighbor(heart_embedding, query_embedding)",
         "input.query(query_embedding)": {
             "value": embedding
         }
     }
-
     response = vespa_app.query(body=query_body)
     return response.json()

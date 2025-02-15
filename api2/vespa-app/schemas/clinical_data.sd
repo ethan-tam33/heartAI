@@ -1,0 +1,44 @@
+
+schema clinical_data {
+  document clinical_data {
+    field pat type string {
+      indexing: summary | index
+    }
+    field age type int {
+      indexing: summary | attribute
+    }
+    field category type string {
+      indexing: summary | index
+    }
+    field clinical_info type string {
+      indexing: summary | index
+    }
+    field embedding type tensor<float>(d[384]) {
+      indexing: attribute
+      attribute {
+        distance-metric: dotproduct
+      }
+    }
+
+    field image_embedding type tensor<float>(d[512]) {
+      attribute {
+        distance-metric: angular
+      }
+        indexing: attribute
+    }
+  }
+  fieldset default {
+    fields: clinical_info
+  }
+  rank-profile default {
+  first-phase { 
+      expression: closeness(image_embedding)
+    }
+  }
+
+  rank-profile clinical {
+    first-phase {
+      expression: nativeRank
+    }
+  }
+}

@@ -70,5 +70,5 @@ def send_request(records: List[MedicalRecord], batch_size: int = 10):
     else:
         print(f"Failed to insert records. Status code: {response.status_code}, {response.text}")
 
-records = load_csv_data('../data/hvsmr_clinical.csv')
+records = load_csv_data('./data/hvsmr_clinical.csv')
 send_request(records)

@@ -1,0 +1,7 @@
+<deployment version="1.0">
+    <instance id="hvsmr-instance">
+        <prod>
+            <region active="true">default</region>
+        </prod>
+    </instance>
+</deployment>

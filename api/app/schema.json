@@ -1,0 +1,45 @@
+{
+    "content": {
+      "clusterName": "hvsmr-cluster",
+      "name": "hvsmr",
+      "documents": [
+        {
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "index": true,
+              "attribute": true
+            },
+            {
+              "name": "category",
+              "type": "string",
+              "index": true,
+              "attribute": true
+            },
+            {
+              "name": "age",
+              "type": "int",
+              "index": false,
+              "attribute": true
+            },
+            {
+              "name": "features_text",
+              "type": "string",
+              "index": true,
+              "attribute": false
+            },
+            {
+              "name": "embedding",
+              "type": "tensor<float>(x[768])",
+              "attribute": true,
+              "index": false
+            }
+          ],
+          "documentName": "hvsmr"
+        }
+      ],
+      "schemaName": "hvsmr"
+    }
+  }
+  
