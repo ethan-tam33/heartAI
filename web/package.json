@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "minimal-tailwind",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@types/react-dropzone": "^5.1.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
     "next": "15.1.7",

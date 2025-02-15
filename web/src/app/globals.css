@@ -1,6 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
@@ -23,3 +26,13 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+/* Example: body transitions */
+
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+

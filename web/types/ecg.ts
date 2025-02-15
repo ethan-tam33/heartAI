@@ -1,5 +1,4 @@
 // types/ecg.d.ts
-
 export interface ECGMarker {
     x: number
     y: number
