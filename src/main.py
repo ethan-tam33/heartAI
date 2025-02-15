@@ -31,8 +31,12 @@ schema = Schema(
                 name="heart_embedding",
                 type=f"tensor<float>(x[{torch_embed_size}])",
                 indexing=["index"],
+<<<<<<< HEAD
                 attribute=True,
                 distance_metric="dotproduct"  # match distance_metric above!
+=======
+                distance_metric=f"{distance_metric}",
+>>>>>>> 6bb9494c27f15b5eca88a0777e4d08221f6f48fb
             ),
             # ... rest of your boolean fields ...
         ]
@@ -51,6 +55,11 @@ vespa_cloud = VespaCloud(
     key_content=os.getenv("VESPA_TEAM_API_KEY")
 )
 
+# deploy!
+from vespa.deployment import VespaDocker
+vespa_container = VespaDocker()
+vespa_connection = vespa_container.deploy(application_package=package)
+
 @app.post("/insert_records/")
 async def insert_records(records: List[MedicalRecord]):
     print("Inserting records...")
@@ -60,12 +69,14 @@ async def insert_records(records: List[MedicalRecord]):
         # If you want to use vespa_app.syncio, do so here.
         with vespa_app.syncio() as sync_app:
             for record in records:
-                print("ayooo")
+                print("data_id: ", str(record.Pat))
+                print("dict: ", record.dict)
                 response = sync_app.feed_data_point(
                     schema="medical_records",
                     data_id=str(record.Pat),
                     fields=record.dict()
                 )
+                print(response.json())
                 print("byeee")
                 responses.append(response.json())
         # CRITICAL: Return at the end so FastAPI can finish the request
@@ -73,7 +84,11 @@ async def insert_records(records: List[MedicalRecord]):
     except Exception as e:
         print(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 6bb9494c27f15b5eca88a0777e4d08221f6f48fb
 @app.post("/query/")
 async def query_vespa(embedding: List[float], top_k: int = 5):
     if len(embedding) != torch_embed_size:

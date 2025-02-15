@@ -1,0 +1,54 @@
+schema medical_records {
+    document medical_records {
+        field Pat type int { indexing: summary }
+        field Age type int { indexing: summary }
+        field Category type string { indexing: index | summary }
+        field heart_embedding type tensor<float>(x[128]) { 
+            indexing: index 
+            attribute {
+                distance-metric: dotproduct
+            }
+        }
+        field Normal type bool { indexing: summary }
+        field MildModerateDilation type bool { indexing: summary }
+        field VSD type bool { indexing: summary }
+        field ASD type bool { indexing: summary }
+        field DORV type bool { indexing: summary }
+        field DLoopTGA type bool { indexing: summary }
+        field ArterialSwitch type bool { indexing: summary }
+        field BilateralSVC type bool { indexing: summary }
+        field SevereDilation type bool { indexing: summary }
+        field TortuousVessels type bool { indexing: summary }
+        field Dextrocardia type bool { indexing: summary }
+        field Mesocardia type bool { indexing: summary }
+        field InvertedVentricles type bool { indexing: summary }
+        field InvertedAtria type bool { indexing: summary }
+        field LeftCentralIVC type bool { indexing: summary }
+        field LeftCentralSVC type bool { indexing: summary }
+        field LLoopTGA type bool { indexing: summary }
+        field AtrialSwitch type bool { indexing: summary }
+        field Rastelli type bool { indexing: summary }
+        field SingleVentricle type bool { indexing: summary }
+        field DILV type bool { indexing: summary }
+        field DIDORV type bool { indexing: summary }
+        field CommonAtrium type bool { indexing: summary }
+        field Glenn type bool { indexing: summary }
+        field Fontan type bool { indexing: summary }
+        field Heterotaxy type bool { indexing: summary }
+        field SuperoinferiorVentricles type bool { indexing: summary }
+        field PAAtresiaOrMPAStump type bool { indexing: summary }
+        field PABanding type bool { indexing: summary }
+        field AOPAAnastamosis type bool { indexing: summary }
+        field Marfan type bool { indexing: summary }
+        field CMRArtifactAO type bool { indexing: summary }
+        field CMRArtifactPA type bool { indexing: summary }
+    }
+
+    fieldset default { fields: Pat, Age, Category, heart_embedding }
+
+    rank-profile default {
+        first-phase {
+            expression: closeness(heart_embedding)
+        }
+    }
+}

@@ -1,0 +1,19 @@
+<services version="1.0">
+    <container id="default" version="1.0">
+        <search />
+        <document-api />
+        <http>
+            <server port="8080" />
+        </http>
+    </container>
+
+    <content id="content" version="1.0">
+        <redundancy>1</redundancy>
+        <documents>
+            <document type="medical_records" mode="index" />
+        </documents>
+        <nodes>
+            <node hostalias="node1" />
+        </nodes>
+    </content>
+</services>
