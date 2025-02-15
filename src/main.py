@@ -35,8 +35,7 @@ schema = Schema(
                 name="heart_embedding",
                 type=f"tensor<float>(x[{torch_embed_size}])",
                 indexing=["index"],
-                attribute=True,
-                distance_metric="euclidean"
+                distance_metric=f"{distance_metric}",
             ),
             Field(name="Normal", type="bool", indexing=["summary"]),
             Field(name="MildModerateDilation", type="bool", indexing=["summary"]),
@@ -87,6 +86,11 @@ vespa_cloud = VespaCloud(
     key_content=os.getenv("VESPA_TEAM_API_KEY")
 )
 
+# deploy!
+from vespa.deployment import VespaDocker
+vespa_container = VespaDocker()
+vespa_connection = vespa_container.deploy(application_package=package)
+
 @app.post("/insert_records/")
 async def insert_records(records: List[MedicalRecord]):
     print("Inserting records...")
@@ -95,30 +99,20 @@ async def insert_records(records: List[MedicalRecord]):
     try:
         with vespa_app.syncio() as sync_app:
             for record in records:
-                print("ayooo")
+                print("data_id: ", str(record.Pat))
+                print("dict: ", record.dict)
                 response = sync_app.feed_data_point(
                     schema="medical_records",
                     data_id=str(record.Pat),  # Unique identifier
                     fields=record.dict()
                 )
+                print(response.json())
                 print("byeee")
                 responses.append(response.json())
     except Exception as e:
         print(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-    # print("Inserting records...")
-    # print(records)
-    # responses = []
-    # for record in records:
-    #     response = vespa_app.feed_data_point(
-    #         schema="medical_records",
-    #         data_id=str(record.Pat),  # Unique identifier
-    #         fields=record.dict()
-    #     )
-    #     responses.append(response.json())
     
-    # return {"message": "Records inserted successfully", "responses": responses}
-
 @app.post("/query/")
 async def query_vespa(embedding: List[float], top_k: int = 5):
     if len(embedding) != torch_embed_size:

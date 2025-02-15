@@ -7,7 +7,7 @@ api_url = "http://localhost:8000/insert_records/"
 
 # lets say we have a csv file that maps a patient to their heart embedding
 pat_to_embed = {}
-for i in range(60):
+for i in range(59):
     # make a random list of size 128 of floats
     pat_to_embed[i] = [i / 100 for i in range(128)]
 
@@ -57,23 +57,18 @@ def load_csv_data(file_path: str) -> List[MedicalRecord]:
                 CMRArtifactPA=row['CMRArtifactPA'] == 'X'
             )
             records.append(record)
+    print(len(records))
     return records
 
 def send_request(records: List[MedicalRecord], batch_size: int = 10):
     print("hellooo")
-    for i in range(0, len(records), batch_size):
-        print(i)
-        batch = records[i:i + batch_size]
-        response = requests.post(api_url, json=[record.dict() for record in batch])
-        if response.status_code == 200:
-            print(f"Batch {i//batch_size + 1} inserted successfully!")
-        else:
-            print(f"Failed to insert batch {i//batch_size + 1}. Status code: {response.status_code}, {response.text}")
-    # response = requests.post(api_url, json=[record.dict() for record in records])
-    # if response.status_code == 200:
-    #     print("Records inserted successfully!")
-    # else:
-    #     print(f"Failed to insert records. Status code: {response.status_code}, {response.text}")
+    print(len(records))
+    #response = requests.post(api_url, json=[record.dict() for record in records])
+    response = requests.post(api_url, json=[records[0].dict()])
+    if response.status_code == 200:
+        print("Records inserted successfully!")
+    else:
+        print(f"Failed to insert records. Status code: {response.status_code}, {response.text}")
 
 records = load_csv_data('../data/hvsmr_clinical.csv')
 send_request(records)
