@@ -1,20 +1,26 @@
-import { Diagnosis } from "../../types/ecg";
+// components/SimilarECGThumbnail.tsx
 
-type Props = {
-    imageUrl: string;
-    similarity: number;
-    diagnosis: Diagnosis; // Changed from string
-    date: string;
-  };
-  
-  export function SimilarECGThumbnail({
-    imageUrl,
-    similarity,
-    diagnosis,
-    date,
-  }: Props) {
+'use client'
+
+import { Diagnosis } from "../../types/ecg"
+
+// import type { Diagnosis } from '@/types/ecg'
+
+interface SimilarECGThumbnailProps {
+  imageUrl: string
+  similarity: number
+  diagnosis: Diagnosis
+  date: string
+}
+
+export function SimilarECGThumbnail({
+  imageUrl,
+  similarity,
+  diagnosis,
+  date,
+}: SimilarECGThumbnailProps) {
   return (
-    <div className="group relative cursor-pointer bg-slate-50 rounded-lg overflow-hidden border border-slate-200 hover:border-blue-200 transition-colors">
+    <div className="group relative cursor-pointer bg-slate-50 rounded-lg overflow-hidden border border-slate-200 hover:shadow-lg hover:border-blue-200 transition-all">
       <img
         src={imageUrl}
         alt="Similar ECG"
@@ -31,9 +37,10 @@ type Props = {
         </div>
         <div className="text-xs text-slate-500">{date}</div>
       </div>
+      {/* Overlay with "Compare" text */}
       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
         <span className="text-white text-sm font-medium">Compare</span>
       </div>
     </div>
-  );
+  )
 }

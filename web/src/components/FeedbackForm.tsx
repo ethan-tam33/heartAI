@@ -1,10 +1,14 @@
-import { useState } from 'react';
+// components/FeedbackForm.tsx
+
+'use client'
+
+import { useState } from 'react'
 
 export function FeedbackForm() {
   const [feedbackType, setFeedbackType] = useState<'confirm' | 'correct' | null>(
     null
-  );
-  const [comment, setComment] = useState('');
+  )
+  const [comment, setComment] = useState('')
 
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
@@ -12,13 +16,14 @@ export function FeedbackForm() {
         Provide Feedback
       </h2>
       <div className="space-y-4">
+        {/* Confirm / Correct Buttons */}
         <div className="flex gap-4">
           <button
             onClick={() => setFeedbackType('confirm')}
             className={`flex-1 p-3 rounded-lg transition-colors ${
               feedbackType === 'confirm'
                 ? 'bg-green-100 border-2 border-green-500'
-                : 'bg-slate-100 hover:bg-slate-200 border-2 border-transparent'
+                : 'bg-slate-100 hover:bg-slate-200 border border-transparent'
             }`}
           >
             <span className="font-medium text-slate-900">Confirm Diagnosis</span>
@@ -28,13 +33,16 @@ export function FeedbackForm() {
             className={`flex-1 p-3 rounded-lg transition-colors ${
               feedbackType === 'correct'
                 ? 'bg-red-100 border-2 border-red-500'
-                : 'bg-slate-100 hover:bg-slate-200 border-2 border-transparent'
+                : 'bg-slate-100 hover:bg-slate-200 border border-transparent'
             }`}
           >
-            <span className="font-medium text-slate-900">Suggest Correction</span>
+            <span className="font-medium text-slate-900">
+              Suggest Correction
+            </span>
           </button>
         </div>
 
+        {/* Suggested Correction Dropdown (only if 'correct') */}
         {feedbackType === 'correct' && (
           <div className="space-y-2">
             <label className="block text-sm font-medium text-slate-700">
@@ -49,6 +57,7 @@ export function FeedbackForm() {
           </div>
         )}
 
+        {/* Comments */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-slate-700">
             Additional Comments
@@ -61,13 +70,14 @@ export function FeedbackForm() {
           />
         </div>
 
+        {/* Submit */}
         <button
-          className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors"
+          className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors disabled:cursor-not-allowed"
           disabled={!feedbackType}
         >
           Submit Feedback
         </button>
       </div>
     </div>
-  );
+  )
 }

@@ -1,13 +1,16 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import Link from 'next/link';
+// app/layout.tsx
 
-const inter = Inter({ subsets: ['latin'] });
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import './globals.css'
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
   title: 'ECG Analysis System',
   description: 'Medical research platform for ECG classification',
-};
+}
 
 export default function RootLayout({
   children,
@@ -15,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} antialiased bg-slate-50`}>
+    <html lang="en" className={inter.variable}>
+      <body className="antialiased bg-slate-50">
         <nav className="bg-white border-b border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
@@ -29,13 +32,13 @@ export default function RootLayout({
               <div className="flex space-x-4">
                 <Link
                   href="/about"
-                  className="text-slate-600 hover:text-slate-900 px-3 py-2"
+                  className="text-slate-600 hover:text-slate-900 px-3 py-2 transition-colors"
                 >
                   About
                 </Link>
                 <Link
                   href="/docs"
-                  className="text-slate-600 hover:text-slate-900 px-3 py-2"
+                  className="text-slate-600 hover:text-slate-900 px-3 py-2 transition-colors"
                 >
                   Documentation
                 </Link>
@@ -46,7 +49,7 @@ export default function RootLayout({
         {children}
       </body>
     </html>
-  );
+  )
 }
 
 function HeartIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -65,5 +68,5 @@ function HeartIcon(props: React.SVGProps<SVGSVGElement>) {
         d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
       />
     </svg>
-  );
+  )
 }
