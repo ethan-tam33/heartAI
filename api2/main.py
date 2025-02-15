@@ -16,12 +16,14 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 # Path to the CSV dataset
 DATA_FILE = "./data/hvsmr_clinical.csv"
 
-
+# for eahc image create doc, embeding plus 
 
 def generate_clinical_info(row: pd.Series) -> str:
     """
-    Combine selected fields from the CSV row into a single string.
-    Here we skip some fields (like Pat and Age) if not needed.
+    Combine selected fields from 
+    
+    # 59 docs
+    #embeddings + data e Pat and Age) if not needed.
     Adjust as necessary.
     """
     fields = []
@@ -58,7 +60,8 @@ def ingest_data():
                 "age": int(row["Age"]),
                 "category": row["Category"],
                 "clinical_info": clinical_info,
-                "embedding": embedding_vector
+                "embedding": embedding_vector,
+               # "image_embedding":  "ghgfhdhd"
             }
         
         # Index the document into Vespa under the document type "clinical_data"
@@ -73,15 +76,35 @@ def search(query: str = Query(..., description="Search query text")):
 
     # Build the Vespa query using a nearestNeighbor function on the "embedding" field
     query_body = {
-        "yql": "select * from sources * where ([{\"targetNumHits\": 10}]nearestNeighbor(embedding, query_embedding));",
+        "yql": "select * from sources * where ([{\"targetNumHits\": 10}]nearestNeighbor(image_embedding, query_embedding));",
         "query": query,
         "ranking": "default",
         "hits": 10,
         "ranking.features.query(query_embedding)": query_embedding
     }
     result = vespa_app.query(query=query_body)
+
+    #call perplexity
     return result
 
+@app.get("/search2", summary="Search clinical data via embedding similarity")
+
+# input val check
+def perplexity_call(vespa_output)
+# json parse
+# perplexity
+
+def nii_to_suggestion():
+    # call david's stuff to get nii of full heart
+    # embde that and pass it vespa search()
+    # pass output ot perplexity
+    # return ai explanation
+    # {
+    #     "explanation": str
+    #     "confidence_level":
+    #     "most_similar_nii" (stretch) as base64
+    #     "perplexity": float
+    # }
 
 if __name__ == "__main__":
     import uvicorn
