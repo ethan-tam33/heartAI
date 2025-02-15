@@ -13,7 +13,7 @@ app = FastAPI()
 vespa_app = Vespa(url="http://localhost", port=8000)
 
 # Replace with your tenant name from the Vespa Cloud Console
-tenant_name = "ethantam33"
+tenant_name = "socrates"
 # Replace with your application name (does not need to exist yet)
 application = "heartaivespa"
 
