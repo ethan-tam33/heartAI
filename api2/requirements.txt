@@ -3,3 +3,6 @@ uvicorn
 pandas
 sentence-transformers
 vespa
+nibabel
+monai
+python-dotenv
