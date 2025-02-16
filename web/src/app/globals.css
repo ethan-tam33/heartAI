@@ -38,3 +38,6 @@ body {
   display: none !important;
 }
 
+nextjs-portal {
+  display: none;
+}
