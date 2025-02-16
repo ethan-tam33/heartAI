@@ -16,6 +16,7 @@ app = FastAPI(title="Vespa Embeddings/RAG FastAPI Demo")
 
 # Initialize Vespa client – assumes Vespa is running at localhost:8080
 vespa_app = Vespa(url="http://localhost", port=8080)
+# vespa_app = Vespa(url="https://e7032d12.d1f1f075.z.vespa-app.cloud/", port=8080)
 
 # Load embedding model (this may take a moment on first run)
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -78,29 +79,111 @@ def ingest_data():
     return ingest_data_from_zip(vespa_app, model)
 
 
+# @app.get("/search", summary="Search clinical data via embedding similarity")
+# def search(query: str = Query(..., description="Search query text")):
+#     # Compute embedding for the query text
+#     # query_embedding = model.encode(query).tolist()
+#     with open("/Users/socratesj.osorio/Development/heartAI/api2/mesh1.nii", "rb") as nifti_file:
+#         base64_nifti = base64.b64encode(nifti_file.read()).decode('utf-8')
+
+#     heart_embedding = NIfTIToEmbedding().embedding_from_base64(base64_nifti)
+#     # query_embedding = embedder(query)
+
+#     # Build the Vespa query using a nearestNeighbor function on the "embedding" field
+#     # query_body = {
+#     #     "yql": "select * from sources * where ([{\"targetNumHits\": 10}]nearestNeighbor(image_embedding, query_embedding));",
+#     #     "query": query,
+#     #     "ranking": "default",
+#     #     "hits": 10,
+#     #     "ranking.features.query(query_embedding)": heart_embedding
+#     # }
+#     query_body = {
+#         # "yql": "select * from clinical_data * where (nearestNeighbor(image_embedding, query_embedding));",
+#         # "yql": "select * from clinical_data * where (\{targetHits\:1\}nearestNeighbor(image_embedding, query_image));",
+#         "yql": "where ({targetHits\:10, distanceThreshold:0.5}nearestNeighbor(image_embedding, query_vec)) limit 10",
+#         "query": query,
+#         "ranking": "default",
+#         "hits": 10,
+#         "ranking.features.query(query_embedding)": heart_embedding
+#     }
+#     result = vespa_app.query(query=query_body)
+
+#     #call perplexity
+#     return result
+
+# @app.get("/search", summary="Search clinical data via embedding similarity")
+# def search(query: str = Query(..., description="Search query text")):
+#     """
+#     Return NN search hits from clinical_data, given a new query embedding.
+#     """
+
+#     # Here you would compute or load the query embedding. 
+#     # For example, from a base64-encoded NIfTI file:
+#     with open("/Users/socratesj.osorio/Development/heartAI/api2/mesh1.nii", "rb") as nifti_file:
+#         base64_nifti = base64.b64encode(nifti_file.read()).decode("utf-8")
+
+#     # Convert that NIfTI to a 512-d embedding:
+#     heart_embedding = NIfTIToEmbedding().embedding_from_base64(base64_nifti).tolist()
+
+#     # Build the query request body. The important parts are:
+#     #  1) A valid YQL string that does "select ... from clinical_data where nearestNeighbor(...)"
+#     #  2) The 'ranking.profile'
+#     #  3) The 'ranking.features.query(query_vec)' which matches the second param of nearestNeighbor
+#     query_body = {
+#         "yql": (
+#             "select * from clinical_data "
+#             "where ({targetHits:10, distanceThreshold:0.5}nearestNeighbor(image_embedding, query_vec)) "
+#             "limit 10"
+#         ),
+#         # If you still want to pass the user text as "query", you can do so, 
+#         # though it won’t affect the NN operator. 
+#         "query": query,
+
+#         # Use the default rank profile that does first-phase: closeness(image_embedding)
+#         "ranking.profile": "default",
+
+#         # Show up to 10 hits
+#         "hits": 10,
+
+#         # Supply the actual embedding vector as a query feature
+#         "ranking.features.query(query_vec)": heart_embedding
+#     }
+
+#     # Execute the query against your Vespa app
+#     result = vespa_app.query(body=query_body)
+
+#     return result
+
 @app.get("/search", summary="Search clinical data via embedding similarity")
 def search(query: str = Query(..., description="Search query text")):
-    # Compute embedding for the query text
-    # query_embedding = model.encode(query).tolist()
+    """
+    Return NN search hits from clinical_data, given a new query embedding.
+    """
+
+    # 1. Load/compute your embedding.
     with open("/Users/socratesj.osorio/Development/heartAI/api2/mesh1.nii", "rb") as nifti_file:
-        base64_nifti = base64.b64encode(nifti_file.read()).decode('utf-8')
-    embedder = NIfTIToEmbedding()
-    heart_embedding = embedder.load_nifti_from_base64(base64_nifti)
-    # print(heart_embedding.shape)
-    # query_embedding = embedder(query)
+        base64_nifti = base64.b64encode(nifti_file.read()).decode("utf-8")
 
-    # Build the Vespa query using a nearestNeighbor function on the "embedding" field
+    # 2. Convert NIfTI → 512-d embedding (as a Python list, not NumPy array).
+    heart_embedding = NIfTIToEmbedding().embedding_from_base64(base64_nifti).tolist()
+
+    # 3. Build the query body with proper YQL syntax (no stray backslashes).
     query_body = {
-        "yql": "select * from sources * where ([{\"targetNumHits\": 10}]nearestNeighbor(image_embedding, query_embedding));",
-        "query": query,
-        "ranking": "default",
+        "yql": (
+            "select * from clinical_data "
+            "where ({targetHits:1}nearestNeighbor(image_embedding, query_vec)) "
+            "limit 10"
+        ),
+        # "query": query,  # optional if you want to pass user text
+        "ranking.profile": "default",
         "hits": 10,
-        "ranking.features.query(query_embedding)": heart_embedding
+        "ranking.features.query(query_vec)": heart_embedding
     }
-    result = vespa_app.query(query=query_body)
 
-    #call perplexity
+    # 4. Execute the query
+    result = vespa_app.query(body=query_body)
     return result
+
 
 def vespa_search(embeddings):
 

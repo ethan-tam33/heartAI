@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@11labs/react": "^0.0.7",
+    "@types/three": "^0.173.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
     "next": "15.1.7",

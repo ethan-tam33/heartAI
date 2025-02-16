@@ -1,137 +1,32 @@
+
 schema clinical_data {
   document clinical_data {
     field pat type string {
       indexing: summary | index
     }
-    field age type int {
-      indexing: summary | attribute
-    }
-    field category type string {
+    field data type string {
       indexing: summary | index
     }
-    field normal type string {
-      indexing: summary | index
-    }
-    field mild_moderate_dilation type string {
-      indexing: summary | index
-    }
-    field vsd type string {
-      indexing: summary | index
-    }
-    field asd type string {
-      indexing: summary | index
-    }
-    field dorv type string {
-      indexing: summary | index
-    }
-    field d_loop_tga type string {
-      indexing: summary | index
-    }
-    field arterial_switch type string {
-      indexing: summary | index
-    }
-    field bilateral_svc type string {
-      indexing: summary | index
-    }
-    field severe_dilation type string {
-      indexing: summary | index
-    }
-    field tortuous_vessels type string {
-      indexing: summary | index
-    }
-    field dextrocardia type string {
-      indexing: summary | index
-    }
-    field mesocardia type string {
-      indexing: summary | index
-    }
-    field inverted_ventricles type string {
-      indexing: summary | index
-    }
-    field inverted_atria type string {
-      indexing: summary | index
-    }
-    field left_central_ivc type string {
-      indexing: summary | index
-    }
-    field left_central_svc type string {
-      indexing: summary | index
-    }
-    field l_loop_tga type string {
-      indexing: summary | index
-    }
-    field atrial_switch type string {
-      indexing: summary | index
-    }
-    field rastelli type string {
-      indexing: summary | index
-    }
-    field single_ventricle type string {
-      indexing: summary | index
-    }
-    field dilv type string {
-      indexing: summary | index
-    }
-    field didorv type string {
-      indexing: summary | index
-    }
-    field common_atrium type string {
-      indexing: summary | index
-    }
-    field glenn type string {
-      indexing: summary | index
-    }
-    field fontan type string {
-      indexing: summary | index
-    }
-    field heterotaxy type string {
-      indexing: summary | index
-    }
-    field superoinferior_ventricles type string {
-      indexing: summary | index
-    }
-    field pa_atresia_or_mpa_stump type string {
-      indexing: summary | index
-    }
-    field pabanding type string {
-      indexing: summary | index
-    }
-    field aopa_anastamosis type string {
-      indexing: summary | index
-    }
-    field marfan type string {
-      indexing: summary | index
-    }
-    field cmr_artifact_ao type string {
-      indexing: summary | index
-    }
-    field cmr_artifact_pa type string {
-      indexing: summary | index
-    }
-    field clinical_info type string {
-      indexing: summary | index
-    }
-    field embedding type tensor<float>(d[384]) {
-      indexing: attribute
-      attribute {
-        distance-metric: dotproduct
-      }
-    }
+
     field image_embedding type tensor<float>(d[512]) {
-      indexing: attribute
       attribute {
         distance-metric: angular
       }
+        indexing: attribute | summary | index
     }
   }
   fieldset default {
-    fields: clinical_info
+    fields: pat, data
   }
   rank-profile default {
-    first-phase { 
+     inputs {
+      query(query_vec) tensor<float>(d[512]) 
+    }
+  first-phase { 
       expression: closeness(image_embedding)
     }
   }
+
   rank-profile clinical {
     first-phase {
       expression: nativeRank

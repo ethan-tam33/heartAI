@@ -1,24 +1,24 @@
-import torch
 import nibabel as nib
+from nibabel.fileholders import FileHolder
+import io
+import base64
 import numpy as np
+import torch
 from torch import nn
 from monai.transforms import Compose, Resize, ScaleIntensity, ToTensor
-import base64
-import io
 
 class NIfTIToEmbedding:
     def __init__(self, device='cuda' if torch.cuda.is_available() else 'cpu'):
         self.device = device
         self.model = self._build_model().to(device)
         self.preprocess = Compose([
-            Resize(spatial_size=(128, 128, 64)),  # Standardize input dimensions
-            ScaleIntensity(minv=0.0, maxv=1.0),  # Normalize to [0,1]
-            ToTensor()
+            Resize(spatial_size=(128, 128, 64)),
+            ScaleIntensity(minv=0.0, maxv=1.0),
+            ToTensor(dtype=torch.float32)
         ])
 
     def _build_model(self):
         return nn.Sequential(
-            # 3D CNN Feature Extractor (4 layers)
             nn.Conv3d(1, 64, kernel_size=3, padding=1),
             nn.ReLU(),
             nn.MaxPool3d(2),
@@ -29,60 +29,64 @@ class NIfTIToEmbedding:
             nn.ReLU(),
             nn.Conv3d(256, 512, kernel_size=3, padding=1),
             nn.ReLU(),
-            
-            # Flatten and reshape for Transformer
             nn.Flatten(start_dim=2),
-            nn.Linear(16384, 512),  # Adjust input size to match flattened CNN output
-            
-            # Transformer Context Module
+            nn.Linear(16384, 512),
             nn.TransformerEncoder(
-                encoder_layer=nn.TransformerEncoderLayer(
-                    d_model=512,
-                    nhead=8,
-                    dim_feedforward=2048,
+                nn.TransformerEncoderLayer(
+                    d_model=512, 
+                    nhead=8, 
+                    dim_feedforward=2048, 
                     batch_first=True
                 ),
                 num_layers=6
             ),
-            
-            # Global Pooling
             nn.AdaptiveAvgPool1d(1),
             nn.Flatten()
         )
 
     def load_nifti(self, path):
-        """Load and preprocess NIfTI file"""
+        """Load from disk."""
         img = nib.load(path)
-        data = img.get_fdata()
-        return self.preprocess(data[np.newaxis,...])  # Add channel dimension
+        data = img.get_fdata().astype(np.float32)
+        return self.preprocess(data[np.newaxis, ...])  # add channel
 
-    def load_nifti_from_base64(self, base64_string):
-        """Load and preprocess NIfTI file from base64 string"""
+    def load_nifti_from_base64(self, base64_string: str):
+        """Load from base64."""
         try:
-            # Decode base64 string
+            # Decode base64 -> bytes
             nifti_data = base64.b64decode(base64_string)
-            
-            # Load NIfTI from bytes
-            img = nib.nifti1.Nifti1Image.from_bytes(nifti_data)
-            data = img.get_fdata()
-            return self.preprocess(data[np.newaxis,...])
+
+            file_map = nib.Nifti1Image.make_file_map()
+            # Just set the "image" key
+            file_map["image"].fileobj = io.BytesIO(nifti_data)
+
+            # Create the image from file_map
+            img = nib.Nifti1Image.from_file_map(file_map)
+
+            data = img.get_fdata().astype(np.float32)
+            return self.preprocess(data[np.newaxis, ...])  # add channel
         except Exception as e:
             raise ValueError(f"Error decoding or loading NIfTI from base64: {e}")
 
-    def __call__(self, nii_path):
-        with torch.no_grad():
-            x = self.load_nifti(nii_path).unsqueeze(0).to(self.device)
-            print(f"Input shape: {x.shape}")  # Debugging information
-            return self.model(x).cpu().numpy()
+    @torch.no_grad()
+    def __call__(self, nii_path: str):
+        """Get embedding from file path."""
+        x = self.load_nifti(nii_path).unsqueeze(0).to(self.device)
+        return self.model(x).cpu().numpy()
 
-# Usage
-# # heart_embedding = embedder("/Users/socratesj.osorio/Development/heartAI/api2/mesh1.nii")
+    @torch.no_grad()
+    def embedding_from_base64(self, base64_string: str):
+        """Get embedding directly from base64."""
+        x = self.load_nifti_from_base64(base64_string).unsqueeze(0).to(self.device)
+        return self.model(x).cpu().numpy()
 
-# with open("/Users/socratesj.osorio/Development/heartAI/api2/mesh1.nii", "rb") as nifti_file:
-#     base64_nifti = base64.b64encode(nifti_file.read()).decode('utf-8')
-
-# embedder = NIfTIToEmbedding()
-# heart_embedding = embedder.load_nifti_from_base64(base64_nifti)
-
-# print(f"Generated embedding shape: {heart_embedding.shape}")
-
+# Usage Example:
+# from_disk = NIfTIToEmbedding()("/path/to/your_file.nii")
+#
+# with open("/path/to/your_file.nii", "rb") as f:
+#     base64_nifti = base64.b64encode(f.read()).decode('utf-8')
+#
+# from_base64 = NIfTIToEmbedding().embedding_from_base64(base64_nifti)
+#
+# print("From disk shape:", from_disk.shape)
+# print("From base64 shape:", from_base64.shape)
