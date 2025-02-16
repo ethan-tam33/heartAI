@@ -5,13 +5,12 @@
 import { useEffect, useState } from 'react'
 // import { ResultsDashboard } from '@/components/ResultsDashboard'
 import { useRouter } from 'next/navigation'
-import { Diagnosis, SimilarECG } from '../../../types/ecg'
+import { Diagnosis, SimilarECG } from '../../../types/cmr'
 import { ResultsDashboard } from '../components/ResultsDashboard'
 
 export default function ResultsPage() {
   const router = useRouter()
   const [diagnosis, setDiagnosis] = useState<Diagnosis | null>(null)
-  const [similarECGs, setSimilarECGs] = useState<SimilarECG[]>([])
 
   useEffect(() => {
     const raw = sessionStorage.getItem('ecgData')
@@ -22,7 +21,6 @@ export default function ResultsPage() {
     }
     const parsed = JSON.parse(raw)
     setDiagnosis(parsed.diagnosis)
-    setSimilarECGs(parsed.similarECGs)
   }, [router])
 
   if (!diagnosis) {
@@ -37,7 +35,7 @@ export default function ResultsPage() {
   return (
     <div className="bg-white min-h-screen py-10">
       <div className="max-w-7xl mx-auto px-4">
-        <ResultsDashboard diagnosis={diagnosis} similarECGs={similarECGs} />
+        <ResultsDashboard diagnosis={diagnosis} />
       </div>
     </div>
   )

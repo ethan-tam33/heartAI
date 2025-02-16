@@ -9,7 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@11labs/react": "^0.0.7",
+=======
+    "@types/three": "^0.173.0",
+>>>>>>> aaaebfcb473417e688ddbdeda7aa0b36f1e4788d
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
     "next": "15.1.7",
@@ -23,6 +27,6 @@
     "@types/react-dom": "^19",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5.7.3"
   }
 }

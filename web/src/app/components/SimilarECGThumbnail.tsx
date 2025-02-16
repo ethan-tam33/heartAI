@@ -2,7 +2,7 @@
 
 'use client'
 
-import type { Diagnosis } from '../../../types/ecg'
+import type { Diagnosis } from '../../../types/cmr'
 
 interface SimilarECGThumbnailProps {
   imageUrl: string
@@ -27,7 +27,7 @@ export function SimilarECGThumbnail({
       <div className="p-2">
         <div className="flex justify-between items-center mb-1">
           <span className="text-xs font-medium text-slate-700">
-            {diagnosis.label}
+            {diagnosis.labels}
           </span>
           <span className="text-xs font-semibold text-blue-600">
             {similarity}%

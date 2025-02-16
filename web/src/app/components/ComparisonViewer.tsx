@@ -3,7 +3,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import type { ECGMarker } from '../../../types/ecg'
+import type { CMRMarker } from '../../../types/cmr'
 import { ECGViewer } from './ECGViewer'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
@@ -11,8 +11,8 @@ import html2canvas from 'html2canvas'
 interface ComparisonViewerProps {
   baseImage: string
   compareImage: string
-  baseMarkers: ECGMarker[]
-  compareMarkers: ECGMarker[]
+  baseMarkers: CMRMarker[]
+  compareMarkers: CMRMarker[]
 }
 
 export function ComparisonViewer({

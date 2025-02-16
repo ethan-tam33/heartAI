@@ -31,12 +31,7 @@ schema = Schema(
                 name="heart_embedding",
                 type=f"tensor<float>(x[{torch_embed_size}])",
                 indexing=["index"],
-<<<<<<< HEAD
-                attribute=True,
-                distance_metric="dotproduct"  # match distance_metric above!
-=======
                 distance_metric=f"{distance_metric}",
->>>>>>> 6bb9494c27f15b5eca88a0777e4d08221f6f48fb
             ),
             # ... rest of your boolean fields ...
         ]
@@ -84,11 +79,6 @@ async def insert_records(records: List[MedicalRecord]):
     except Exception as e:
         print(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> 6bb9494c27f15b5eca88a0777e4d08221f6f48fb
 @app.post("/query/")
 async def query_vespa(embedding: List[float], top_k: int = 5):
     if len(embedding) != torch_embed_size:

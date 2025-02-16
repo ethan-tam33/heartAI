@@ -111,7 +111,9 @@ def vespa_search(embeddings):
         "hits": 10,
         "ranking.features.query(query_embedding)": query_embedding
     }
-    
+def get_all_data(nii_path: str):
+    # final api call
+    return
 # should receive a nii file in base 64
 def nii_to_suggestion(nii):
     # SETUP:
@@ -134,6 +136,7 @@ def nii_to_suggestion(nii):
     #     "most_similar_nii" (stretch) as base64
     #     "perplexity": float
     # }
+    pass
 
     # gets passed sample.nii (user's file) as a base64, returns base64 too
     compacted_nii = nerf_conversion(nii_gz)

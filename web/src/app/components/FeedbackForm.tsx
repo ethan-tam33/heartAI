@@ -47,10 +47,34 @@ export function FeedbackForm() {
               Suggested Correction
             </label>
             <select className="w-full p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200">
-              <option>Atrial Fibrillation</option>
-              <option>Ventricular Tachycardia</option>
-              <option>Normal Sinus Rhythm</option>
-              <option>ST-Segment Elevation</option>
+            <option>Congenital Heart Defect</option>
+            <option>Ventricular Septal Defect</option>
+            <option>Atrial Septal Defect</option>
+            <option>Double Outlet Right Ventricle</option>
+            <option>D-Loop Transposition of the Great Arteries</option>
+            <option>L-Loop Transposition of the Great Arteries</option>
+            <option>Single Ventricle Defect</option>
+            <option>Double Inlet Left Ventricle</option>
+            <option>Double Inlet Double Outlet Right Ventricle</option>
+            <option>Common Atrium</option>
+            <option>Superoinferior Ventricles</option>
+            <option>Pulmonary Atresia</option>
+            <option>Aortic-Pulmonary Anastomosis</option>
+            <option>Mild Dilation</option>
+            <option>Moderate Dilation</option>
+            <option>Severe Dilation</option>
+            <option>Tortuous Vessels</option>
+            <option>Bilateral SVC</option>
+            <option>Left Central IVC</option>
+            <option>Left Central SVC</option>
+            <option>Dextrocardia</option>
+            <option>Mesocardia</option>
+            <option>Inverted Ventricles</option>
+            <option>Inverted Atria</option>
+            <option>Heterotaxy Syndrome</option>
+            <option>Marfan Syndrome</option>
+            <option>CMR Artifact AO</option>
+            <option>CMR Artifact PA</option>
             </select>
           </div>
         )}
