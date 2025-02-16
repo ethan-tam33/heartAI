@@ -1,5 +1,3 @@
-// app/results/page.tsx
-
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -32,7 +30,7 @@ export default function ResultsPage() {
   }
 
   return (
-    <div className="bg-white min-h-screen py-10">
+    <div className="bg-gray-50 min-h-screen py-10">
       <div className="max-w-7xl mx-auto px-4">
         <ResultsDashboard diagnosis={diagnosis} />
       </div>

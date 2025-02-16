@@ -79,7 +79,19 @@ import './globals.css'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
+    
     <html>
+      // pages/_app.tsx
+  {process.env.NODE_ENV === 'development' && (
+  <script
+    dangerouslySetInnerHTML={{
+      __html: `
+        window.addEventListener('error', e => e.stopImmediatePropagation())
+        window.addEventListener('unhandledrejection', e => e.stopImmediatePropagation())
+      `
+    }}
+  />
+  )}
       <body>{children}</body>
     </html>
   )

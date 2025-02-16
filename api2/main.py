@@ -119,7 +119,7 @@ def upload_file(req: UploadRequest) -> Dict[str, Any]:
     for h in hits:
         fields = h.get("fields", {})
         doc_data = fields.get("data", "")
-        doc_confidence = fields.get("data", "")
+        doc_confidence = h.get("relevance", "")
         doc_strings.append(doc_data)
     combined_data = "\n".join(doc_strings) if doc_strings else "No data from Vespa"
 
@@ -127,10 +127,11 @@ def upload_file(req: UploadRequest) -> Dict[str, Any]:
     diagnosis_text, diagnosis_links, first_diagnosis = sMaRTDiagnosis(combined_data)
 
     # 5. Return the final JSON to the client
+    print(doc_confidence)
     return {
         "diagnosis_text": diagnosis_text,
         "links": diagnosis_links,
         "confidence": doc_confidence,
         "num_hits": len(hits),
-        "first_diagnosis": first_diagnosis
+        # "first_diagnosis": first_diagnosis
     }

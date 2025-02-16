@@ -18,9 +18,11 @@ export default function LandingPage() {
       {/* Dark overlay + content */}
       <div className="relative z-10 flex flex-col items-center justify-center w-full h-full bg-black/40 px-4">
         <section className="max-w-3xl text-center text-white">
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-4 drop-shadow-md">
-            HeartAI
-          </h1>
+        <h1 className="text-5xl md:text-6xl font-extrabold mb-4 drop-shadow-md">
+  He<span className="italic">a</span>rt<span className="italic">i ❤️</span>
+</h1>
+
+
           <p className="text-lg md:text-xl mb-8 drop-shadow-sm">
             Upload your Cardiovascular Magnetic Resonance scans and get instant analysis with AI-powered insights on a sleek, user-friendly interface.
           </p>

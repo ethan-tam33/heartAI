@@ -38,7 +38,7 @@ def sMaRTDiagnosis(vespa_output: str):
                     "and suggest possible next steps, referencing the input data. "
                     "You are going to be presented with some diseases we found the patient has more likelihood of having, which is marked with YES or NO in the input data. "
                     "Be concise and clarify medical jargon in simple terms."
-                    "Don't use markup"
+                    "Don't use markup (only the brackets for links), and don't mention the YES format I gave you, just use it to suggest your recommendation, but never mention it."
                 )
             },
             {
@@ -75,5 +75,5 @@ def sMaRTDiagnosis(vespa_output: str):
     response_json = response.json()
     response_text = response_json["choices"][0]["message"]["content"]
     response_links_unprocessed = response_json.get("citations", [])
-
+    print(response_links_unprocessed)
     return response_text, response_links_unprocessed, first_diagnosis

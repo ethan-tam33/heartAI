@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Diagnosis } from '../../../types/cmr'
+import React from 'react'
 
 type AnalysisState = {
   status: 'idle' | 'uploading' | 'processing' | 'complete'
@@ -15,27 +16,19 @@ type AnalysisState = {
   suggestionLinks?: string[]
 }
 
-// A small utility to replace bracket references [1], [2], etc. with clickable links.
-// e.g., text = "This suggests coronary artery disease [1], also consider [2]."
-//       links = ["https://some-resource.com", "https://another-resource.com"]
-// This function returns an array of React nodes that contain the text plus the clickable links.
+// Link formatter: converts bracket references like [1] into clickable links.
 function parseSuggestionText(text: string, links: string[]): (string | JSX.Element)[] {
-  // Regex to find bracket references like [1], [2], [17], etc.
-  const regex = /\[(\d+)\]/g
-  const parts = []
-  let lastIndex = 0
-  let match
-
+  const regex = /\[(\d+)\]/g;
+  const parts: (string | JSX.Element)[] = [];
+  let lastIndex = 0;
+  let match;
   while ((match = regex.exec(text)) !== null) {
-    // match[0] is "[1]" for example
-    // match[1] is "1"
-    const index = match.index
-    // Push the text before this bracket
+    const index = match.index;
     if (index > lastIndex) {
-      parts.push(text.slice(lastIndex, index))
+      parts.push(text.slice(lastIndex, index));
     }
-    const linkNumber = parseInt(match[1], 10) // convert "1" -> 1
-    const linkUrl = links[linkNumber - 1] // linkNumber is 1-based
+    const linkNumber = parseInt(match[1], 10);
+    const linkUrl = links[linkNumber - 1];
     if (linkUrl) {
       parts.push(
         <a
@@ -47,33 +40,28 @@ function parseSuggestionText(text: string, links: string[]): (string | JSX.Eleme
         >
           {match[0]}
         </a>
-      )
+      );
     } else {
-      // If we can't find a matching link, just render the bracket text as-is
-      parts.push(match[0])
+      parts.push(match[0]);
     }
-    lastIndex = regex.lastIndex
+    lastIndex = regex.lastIndex;
   }
-
-  // Push any remaining text after the last bracket
   if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex))
+    parts.push(text.slice(lastIndex));
   }
-
-  return parts
+  return parts;
 }
 
 export default function UploadPage() {
-  const router = useRouter()
+  const router = useRouter();
   const [analysisState, setAnalysisState] = useState<AnalysisState>({
     status: 'idle',
     currentStep: '',
     files: [],
     diagnosis: null,
-  })
+  });
 
-  // This function calls our FastAPI backend
-  // NOTE: We changed the URL to "http://localhost:8000/upload" and added CORS in FastAPI
+  // Sends the base64 string to our FastAPI backend.
   const sendBase64ToServer = async (base64String: string): Promise<any> => {
     try {
       const response = await fetch('http://localhost:8000/upload', {
@@ -82,144 +70,138 @@ export default function UploadPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ nii_path: base64String }),
-      })
+      });
       if (!response.ok) {
-        throw new Error(`Server returned status ${response.status}`)
+        throw new Error(`Server returned status ${response.status}`);
       }
-      const responseData = await response.json()
-      console.log('Server response:', responseData)
-      return responseData
+      const responseData = await response.json();
+      console.log('Server response:', responseData);
+      return responseData;
     } catch (error) {
-      console.error('Error uploading file:', error)
-      throw error
+      console.error('Error uploading file:', error);
+      throw error;
     }
-  }
+  };
 
   // Reads the file as base64, sends it to the server, and returns the diagnosis data.
   const handleFileUpload = async (file: File): Promise<any> => {
     if (!file) {
-      throw new Error('No file selected')
+      throw new Error('No file selected');
     }
 
     return new Promise((resolve, reject) => {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = async () => {
-        const base64String = reader.result?.toString().split(',')[1] // Extract base64 from Data URL
+        const base64String = reader.result?.toString().split(',')[1]; // Extract base64 from Data URL
         if (!base64String) {
-          reject('Failed to extract Base64 from Data URL')
-          return
+          reject('Failed to extract Base64 from Data URL');
+          return;
         }
         try {
-          // Send the base64 to the server, which should return relevant fields (diagnosis, links, etc.)
-          const response = await sendBase64ToServer(base64String)
-          resolve(response)
+          const response = await sendBase64ToServer(base64String);
+          resolve(response);
         } catch (error) {
-          reject(error)
+          reject(error);
         }
-      }
+      };
 
       reader.onerror = () => {
-        reject('Error reading file')
-      }
+        reject('Error reading file');
+      };
 
-      reader.readAsDataURL(file)
-    })
-  }
+      reader.readAsDataURL(file);
+    });
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { 'application/nii': ['.nii'] },
     onDrop: (acceptedFiles) => {
       if (!acceptedFiles.every((file) => file.name.endsWith('.nii'))) {
-        alert('Only .nii files are allowed.')
-        return
+        alert('Only .nii files are allowed.');
+        return;
       }
 
       setAnalysisState((prev) => ({
         ...prev,
         status: 'uploading',
         files: acceptedFiles,
-      }))
+      }));
 
-      // Simulate a step-by-step process for demonstration
+      // Simulate a multi-step process.
       setTimeout(() => {
         setAnalysisState((prev) => ({
           ...prev,
           status: 'processing',
           currentStep: 'embeddings',
-        }))
+        }));
 
         setTimeout(() => {
-          setAnalysisState((prev) => ({ ...prev, currentStep: 'retrieval' }))
+          setAnalysisState((prev) => ({ ...prev, currentStep: 'retrieval' }));
           setTimeout(async () => {
-            setAnalysisState((prev) => ({ ...prev, currentStep: 'explanation' }))
+            setAnalysisState((prev) => ({ ...prev, currentStep: 'explanation' }));
             try {
-              // In a real scenario, you'd do this immediately once user drops the file
-              const file = acceptedFiles[0]
-              const response: any = await handleFileUpload(file)
+              const file = acceptedFiles[0];
+              const response: any = await handleFileUpload(file);
+              console.log('conf', response.confidence);
+              const fileUrl = URL.createObjectURL(file);
 
-              // Convert to a blob URL for preview (if needed)
-              const fileUrl = URL.createObjectURL(file)
-
-              // If the backend returns a structured response, parse it and store in state
-              // Example of response: 
-              // {
-              //   "diagnosis_text": "Diagnosis with [1], [2] references ...",
-              //   "links": ["https://link1", "https://link2"],
-              //   ...
-              // }
-              let replacedTextElements: (string | JSX.Element)[] = []
+              // Optionally, you can parse the text here.
+              let replacedTextElements: (string | JSX.Element)[] = [];
               if (response.diagnosis_text && response.links) {
-                replacedTextElements = parseSuggestionText(response.diagnosis_text, response.links)
+                replacedTextElements = parseSuggestionText(response.diagnosis_text, response.links);
               }
-
+            
               setAnalysisState((prev) => ({
                 ...prev,
                 status: 'complete',
                 diagnosis: {
-                  labels: [response.first_diagnosis], // you can populate from server if needed
+                  labels: [response.first_diagnosis],
                   imageUrl: fileUrl,
-                  confidence: response.confidence * 150,
+                  confidence: response.confidence * 1.5,
                   explanation: response.diagnosis_text || '',
-                  severity: response.confidence * 150 > 50 ? 'Moderate' : 'Mild',
+                  severity: response.confidence * 1.5 > 0.5 ? 'Moderate' : 'Mild',
+                  suggestionLinks: response.links || [],
                 },
                 suggestionText: response.diagnosis_text || '',
                 suggestionLinks: response.links || [],
                 currentStep: '',
-              }))
+              }));
             } catch (error) {
-              console.error('Error uploading file:', error)
+              console.error('Error uploading file:', error);
               setAnalysisState((prev) => ({
                 ...prev,
                 status: 'idle',
                 currentStep: '',
                 files: [],
-              }))
-              alert('There was an error processing your file. See console.')
+              }));
+              alert('There was an error processing your file. See console.');
             }
-          }, 1500)
-        }, 1500)
-      }, 1000)
+          }, 1500);
+        }, 1500);
+      }, 1000);
     },
-  })
+  });
 
   const handleViewResults = () => {
-    if (!analysisState.diagnosis) return
-    // Just store in sessionStorage so /results page can read it
-    sessionStorage.setItem('ecgData', JSON.stringify(analysisState))
-    router.push('/results')
-  }
+    if (!analysisState.diagnosis) return;
+    // Store the analysis state in sessionStorage so the /results page can read it.
+    sessionStorage.setItem('ecgData', JSON.stringify(analysisState));
+    router.push('/results');
+  };
 
   return (
     <div className="flex items-center justify-center h-screen w-screen">
       <div className="max-w-4xl mx-auto py-10 px-4 space-y-8">
-        <h1 className="text-3xl font-bold text-slate-900">Upload Your CMR</h1>
+        <h1 className="text-3xl font-bold text-slate-900">
+          Upload Your CMR (Cardiovascular Magnetic Resonance)
+        </h1>
 
         {analysisState.status === 'idle' && (
           <div
             {...getRootProps()}
-            className={`flex flex-col items-center justify-center p-10 border-4 border-dashed rounded-xl cursor-pointer transition-colors 
-              ${isDragActive ? 'border-blue-400 bg-blue-50' : 'border-slate-300 bg-white'}
-            `}
+            className={`flex flex-col items-center justify-center p-10 border-4 border-dashed rounded-xl cursor-pointer transition-colors ${
+              isDragActive ? 'border-blue-400 bg-blue-50' : 'border-slate-300 bg-white'
+            }`}
           >
             <input {...getInputProps()} />
             <p className="text-lg text-slate-700 text-center">
@@ -238,7 +220,6 @@ export default function UploadPage() {
           </div>
         )}
 
-        {/* Show final result + link to results page */}
         {analysisState.status === 'complete' && analysisState.diagnosis && (
           <div className="bg-white rounded-lg shadow p-6 text-center space-y-4">
             <h2 className="text-xl font-semibold text-green-700">
@@ -263,5 +244,5 @@ export default function UploadPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
