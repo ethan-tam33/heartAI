@@ -19,7 +19,7 @@ export default function LandingPage() {
       <div className="relative z-10 flex flex-col items-center justify-center w-full h-full bg-black/40 px-4">
         <section className="max-w-3xl text-center text-white">
         <h1 className="text-5xl md:text-6xl font-extrabold mb-4 drop-shadow-md">
-  He<span className="italic">a</span>rt<span className="italic">i ❤️</span>
+  He<span className="italic">a</span>rt<span className="italic">i</span> ❤️
 </h1>
 
 
