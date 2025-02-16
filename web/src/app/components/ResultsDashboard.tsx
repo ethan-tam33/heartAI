@@ -5,14 +5,14 @@
 import { FeedbackForm } from './FeedbackForm'
 import { ECGViewer } from './ECGViewer'
 import type { Diagnosis } from '../../../types/cmr'
+import Heart from './Heart'
 
 interface ResultsDashboardProps {
   diagnosis: Diagnosis
 }
 
 function labelsToString(labels: string[]) {
-  // just pick the first 2
-  return labels.slice(0, 2).join(', ');
+  return labels.join(', ');
 }
 
 export function ResultsDashboard({ diagnosis }: ResultsDashboardProps) {
@@ -58,8 +58,7 @@ export function ResultsDashboard({ diagnosis }: ResultsDashboardProps) {
       </div>
 
       <div className="col-span-3 flex items-center justify-center bg-white rounded-xl shadow-sm border border-slate-200">
-        {/* <ECGViewer imageUrl={diagnosis.imageUrl} /> */}
-        hi
+        <Heart></Heart>
       </div>
     </div>
   )
