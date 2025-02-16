@@ -182,8 +182,52 @@ def search(query: str = Query(..., description="Search query text")):
 
     # 4. Execute the query
     result = vespa_app.query(body=query_body)
+    # result is in the same format
+    # make it return the relevance score of the firs entry, 
+    # it should also return pat and data
+    # return it as a tuple 
+    #{"json":{"root":{"id":"toplevel","relevance":1.0,"fields":{"totalCount":1},"coverage":{"coverage":100,"documents":59,"full":true,"nodes":1,"results":1,"resultsFull":1},"children":[{"id":"id:clinical_data:clinical_data::clinical_28","relevance":0.3974822457097264,"source":"clinical_data","fields":{"sddocname":"clinical_data","documentid":"id:clinical_data:clinical_data::clinical_28","pat":"28","data":"28,2,severe,,,X,X,,,X,,,,,,X,,,,,,,,,,,X,,,,,X,,,X,","image_embedding":{"type":"tensor<float>(d[512])","values":[-1.0244548320770264e-08,-1.862645149230957e-09]}}}]}},"status_code":200,"url":"http://localhost:8080/search/","operation_type":"query","_request_body":null}
+    
     return result
+# TODO: make it receive an nii embeding and return the important featueres specifided below:
+#    # result is in the same format
+    # make it return the relevance score of the firs entry, 
+    # it should also return pat and data
+    # return it as a tuple (relevance, pat, data) like this
+def search_from_embedding(embedding):
+    """
+    Return NN search hits from clinical_data, given a new query embedding.
+    """
 
+    # 1. Load/compute your embedding.
+    with open("/Users/socratesj.osorio/Development/heartAI/api2/mesh1.nii", "rb") as nifti_file:
+        base64_nifti = base64.b64encode(nifti_file.read()).decode("utf-8")
+
+    # 2. Convert NIfTI → 512-d embedding (as a Python list, not NumPy array).
+    heart_embedding = NIfTIToEmbedding().embedding_from_base64(base64_nifti).tolist()
+
+    # 3. Build the query body with proper YQL syntax (no stray backslashes).
+    query_body = {
+        "yql": (
+            "select * from clinical_data "
+            "where ({targetHits:1}nearestNeighbor(image_embedding, query_vec)) "
+            "limit 10"
+        ),
+        # "query": query,  # optional if you want to pass user text
+        "ranking.profile": "default",
+        "hits": 10,
+        "ranking.features.query(query_vec)": heart_embedding
+    }
+
+    # 4. Execute the query
+    result = vespa_app.query(body=query_body)
+    # result is in the same format
+    # make it return the relevance score of the firs entry, 
+    # it should also return pat and data
+    # return it as a tuple 
+    #{"json":{"root":{"id":"toplevel","relevance":1.0,"fields":{"totalCount":1},"coverage":{"coverage":100,"documents":59,"full":true,"nodes":1,"results":1,"resultsFull":1},"children":[{"id":"id:clinical_data:clinical_data::clinical_28","relevance":0.3974822457097264,"source":"clinical_data","fields":{"sddocname":"clinical_data","documentid":"id:clinical_data:clinical_data::clinical_28","pat":"28","data":"28,2,severe,,,X,X,,,X,,,,,,X,,,,,,,,,,,X,,,,,X,,,X,","image_embedding":{"type":"tensor<float>(d[512])","values":[-1.0244548320770264e-08,-1.862645149230957e-09]}}}]}},"status_code":200,"url":"http://localhost:8080/search/","operation_type":"query","_request_body":null}
+    
+    return result
 
 def vespa_search(embeddings):
 
@@ -196,95 +240,22 @@ def vespa_search(embeddings):
         "ranking.features.query(query_embedding)": query_embedding
     }
 
+
+# @app.post("/upload")
+# def get_all_data(nii_path: str):
+#     # final api call
+#     print("OMGGGGG")
+#     res = {
+#         "labels": ["Congenital Heart Defect", "Ventricular Septal Defect"],
+#         "imageUrl": nii_path,
+#         "confidence": 0.92,
+#         "explanation": "This is the explanation",
+#         "severity": "Moderate",
+#     }
+#     return res
+
+#TODO:  should receive a nii file in base 64 string AND return a json specifed below
 @app.post("/upload")
-def get_all_data(nii_path: str):
-    # final api call
-    print("OMGGGGG")
-    res = {
-        "labels": ["Congenital Heart Defect", "Ventricular Septal Defect"],
-        "imageUrl": nii_path,
-        "confidence": 0.92,
-        "explanation": "This is the explanation",
-        "severity": "Moderate",
-    }
-    return res
-
-def perplexity_call(vespa_output: dict):
-    """
-    Takes in vespa_output, a dictionary where each key is a column in the dataset and each value is the corr. value. This function then calls Perplexity Sonar, which generates a diagnosis using vespa_output.
-
-    Returns two strings:
-    1. Text response containing diagnosis, explanation, and additional relevant information
-    2. Links to cited sources, formatted so that the text string can be printed as a list.
-    """
-    # json parse
-    ############################################################################################
-    ############################################################################################
-    ############################################################################################
-    ########### TO DO: MAY NEED TO CHANGE CSV CONSTRUCTION DEPENDING ON VESPA OUTPUT ###########
-    ############################################################################################
-    ############################################################################################
-    ############################################################################################
-    csv_line = ""
-    for key in vespa_output.keys():
-        csv_line += str(key) + ": " + str(vespa_output[key]) + ", "
-    csv_line = csv_line[:-2]
-
-    # call perplexity
-    load_dotenv()
-    url = "https://api.perplexity.ai/chat/completions"
-    auth_token = os.getenv("PERPLEXITY_API_KEY")
-
-    payload = {
-        "model": "sonar-pro",
-        "messages": [
-            {
-                "role": "system",
-                "content": "You are a doctor's assistant specializing in cardiovascular diseases. Your job is to diagnose cardiovascular diseases, such as congenital heart diseases, vascular anomalies, or surgical procedures related to cardiovascular conditions. You also will explain your diagnosis, including the supporting evidence for your diagnosis, then suggest treatment options and preventions. If you are uncertain, you should also take care to explain alternate diagnoses and their supporting evidence, as well as the potential causes and their supporting evidence. You should also specify any potential health complications that the patient may be at risk for due to your diagnosis. Explain risk factors, if any. If additional information about the patient would be helpful, please specify what information is needed, what tests could be administered to gather the relevant data, and what additional conclusions could be drawn with more information. Be sure to reference specific elements of the input, explain its meaning, and why it applies to the diagnosis so that the doctor and patient can both gain valuable information and make informed decisions from your explanation. All medical terms should be briefly explained in layman's terms, including relevant input labels and values."# Format your response as if you were writing a memo to a doctor. Only output your response, do not output your thinking before the final output."
-            },
-            {
-                "role": "user",
-                "content": "Here is some information about the patient: " + csv_line
-            }
-        ],
-        "max_tokens": None,
-        "temperature": 0.2,
-        "top_p": 0.9,
-        "search_domain_filter": None,
-        "return_images": False,
-        "return_related_questions": False,
-        "search_recency_filter": None,#"<string>",
-        "top_k": 0,
-        "stream": False,
-        "presence_penalty": 0,
-        "frequency_penalty": 1,
-        "response_format": None
-    }
-    headers = {
-        "Authorization": f"Bearer {auth_token}",
-        "Content-Type": "application/json"
-    }
-
-    response = requests.request("POST", url, json=payload, headers=headers)
-    # print(response.text)
-    response_json = response.json()
-    response_text = response_json["choices"][0]["message"]["content"]
-    response_links_unprocessed = response_json["citations"]
-
-    response_links = ""
-
-    counter = 1
-    for link in response_links_unprocessed:
-        response_links += str(counter) + ". " + link + "\n"
-        counter += 1
-    response_links = response_links[:-1]
-
-    # print(response_json["choices"][0]["message"]["content"]) # actual chat response
-    # print(response_json["citations"]) # links to citations
-
-    return response_text, response_links
-
-# should receive a nii file in base 64
 def nii_to_suggestion(nii):
     # SETUP:
     # start app
@@ -308,21 +279,34 @@ def nii_to_suggestion(nii):
     # }
     pass
 
-    # gets passed sample.nii (user's file) as a base64, returns base64 too
+    # assume this gets passed sample.nii (user's file) as a base64, returns base64 too
     compacted_nii = nerf_conversion(nii_gz)
 
     # creates embeddings from nii
     embedder = NIfTIToEmbedding()
-    embeddings = embedder.load_nifti_from_base64(compacted_nii)
+    embeddings = embedder.load_nifti_from_base64(compacted_nii).tolist()
 
-    # calls vespa search
-    vespa_output = vespa_search(embeddings)
+    # calls vespa search, from here you will get the confidence and labels as well, 
+    vespa_output = search_from_embedding(embeddings)
 
-    # calls perplexity
+    # calls perplexity, TODO: make sure to pass the string called data from vespa
     response, links = sMaRTDiagnosis(vespa_output)
-
-    return {"explanation": response, "links": links}
-
+    # TODO: Instead of whatd below, it sohuld be like
+    #     res = {
+#         "labels": ["Congenital Heart Defect", "Ventricular Septal Defect"],
+#         "niiBase64": nii_bytes,   # get this from the compated_nii made into base64
+#         "confidence": 0.92, # from vespa_output
+#         "explanation": "This is the explanation", # from smartdiagnosis
+#          "links": {
+                # 0: 1, 
+                # 1: 0.8
+                # 2: 0.6
+            # }
+#         "severity": "Moderate",
+#     }
+# based on what we get from calling vespa and the diagnosis
+# TODO: FIX THIS BASED ON ABOVE
+    return {}
 
 if __name__ == "__main__":
     import uvicorn

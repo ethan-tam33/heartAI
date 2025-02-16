@@ -27,6 +27,7 @@ export default function UploadPage() {
 
   const sendBase64ToServer = async (base64String: string): Promise<any> => {
     try {
+        // TODO: THIS IS CURRENTLY NOT WORKING FOR SOME REASON as when trying to do an api call, like a not allowed error
       const response = await fetch("/upload", {
         method: "POST",
         headers: {
@@ -58,7 +59,7 @@ export default function UploadPage() {
   
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-  
+        // THIS MIGHT NOT BE WORKING 
       reader.onload = async () => {
         const base64String = reader.result?.toString().split(",")[1]; // Extract Base64 from Data URL
         if (!base64String) {
@@ -66,7 +67,9 @@ export default function UploadPage() {
           return;
         }
         try {
-          const response = await sendBase64ToServer(base64String);
+        // TODO: MAKE IT RECEIVE THE FILEDS WE DEFINED IN THE main.py FASTAPI and render those into the frontend.
+        // LEARN WHAT WE ARE GETTING FROM THE FASTAPI. ALSO FROM THE links and suggestion text, make them be rendered in the following way: The suggestion text contains brackes with numbers like [1], [2], [3] etc. So make these brackets in the text be rendered as mini hyperlinks to each link given in the links list which contains an entry per link. 
+        const response = await sendBase64ToServer(base64String);
           resolve(response);
         } catch (error) {
           reject(error);

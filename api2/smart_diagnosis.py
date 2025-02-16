@@ -8,9 +8,9 @@ import requests
 from dotenv import load_dotenv
 from embeddings import NIfTIToEmbedding
 
-def sMaRTDiagnosis(vespa_output: dict):
+def sMaRTDiagnosis(vespa_output: str):
     """
-    Takes in vespa_output, a dictionary where each key is a column in the dataset and each value is the corr. value. This function then calls Perplexity Sonar, which generates a diagnosis using vespa_output.
+    Takes in vespa_ostput, a dictionary where each key is a column in the dataset and each value is the corr. value. This function then calls Perplexity Sonar, which generates a diagnosis using vespa_output.
 
     Returns two strings:
     1. Text response containing diagnosis, explanation, and additional relevant information
@@ -24,11 +24,11 @@ def sMaRTDiagnosis(vespa_output: dict):
     ############################################################################################
     ############################################################################################
     ############################################################################################
-    csv_line = ""
-    for key in vespa_output.keys():
-        csv_line += str(key) + ": " + str(vespa_output[key]) + ", "
-    csv_line = csv_line[:-2]
-
+    # csv_line = ""
+    # for key in vespa_output.keys():
+    #     csv_line += str(key) + ": " + str(vespa_output[key]) + ", "
+    # csv_line = csv_line[:-2]
+    csv_line = vespa_output
     # call perplexity
     load_dotenv()
     url = "https://api.perplexity.ai/chat/completions"
@@ -73,15 +73,15 @@ def sMaRTDiagnosis(vespa_output: dict):
     response_links = ""
 
     counter = 1
-    for link in response_links_unprocessed:
-        response_links += str(counter) + ". " + link + "\n"
-        counter += 1
-    response_links = response_links[:-1]
+    # for link in response_links_unprocessed:
+    #     response_links += str(counter) + ". " + link + "\n" # 1. link
+    #     counter += 1
+    # response_links = response_links[:-1]
 
     # print(response_json["choices"][0]["message"]["content"]) # actual chat response
     # print(response_json["citations"]) # links to citations
-
-    return response_text, response_links
+    # this retunrs a string and the list of links (ORDER MATTERS)
+    return response_text, response_links_unprocessed
 
 # if __name__ == "__main__":
 #     # Example usage
