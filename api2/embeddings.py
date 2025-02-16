@@ -76,12 +76,12 @@ class NIfTIToEmbedding:
             return self.model(x).cpu().numpy()
 
 # Usage
-# embedder = NIfTIToEmbedding()
 # # heart_embedding = embedder("/Users/socratesj.osorio/Development/heartAI/api2/mesh1.nii")
 
 # with open("/Users/socratesj.osorio/Development/heartAI/api2/mesh1.nii", "rb") as nifti_file:
 #     base64_nifti = base64.b64encode(nifti_file.read()).decode('utf-8')
 
+# embedder = NIfTIToEmbedding()
 # heart_embedding = embedder.load_nifti_from_base64(base64_nifti)
 
 # print(f"Generated embedding shape: {heart_embedding.shape}")

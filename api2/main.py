@@ -113,7 +113,7 @@ def vespa_search(embeddings):
     }
     
 # should receive a nii file in base 64
-def nii_to_suggestion(nii_gz):
+def nii_to_suggestion(nii):
     # SETUP:
     # start app
     # call david's stuff to get nii model

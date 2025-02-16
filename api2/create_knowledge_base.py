@@ -205,3 +205,4 @@ def ingest_data_from_zip(vespa_app, model):
             continue
     
     return {"message": "Data ingested successfully", "num_docs": num_docs}
+ 
