@@ -25,8 +25,14 @@ export default function UploadPage() {
   })
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { 'image/*': [] },
+    // accept: { 'image/*': [] },
+    accept: { 'application/nii': ['.nii'] },
     onDrop: (acceptedFiles) => {
+      if (!acceptedFiles.every(file => file.name.endsWith('.nii'))) {
+        alert('Only .nii files are allowed.');
+        return;
+      }
+
       // 1. Begin "upload"
       setAnalysisState((prev) => ({
         ...prev,
