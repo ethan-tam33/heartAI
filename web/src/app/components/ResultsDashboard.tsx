@@ -88,6 +88,26 @@ export function ResultsDashboard({ diagnosis, similarECGs }: ResultsDashboardPro
               <p className="text-slate-700 leading-relaxed">
                 {diagnosis.explanation}
               </p>
+              <button
+                onClick={() => (window.location.href = '/ai-agent')}
+                className="flex items-center mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 1v11m-6.5 3.5a6.5 6.5 0 0113 0v1h-2a4.5 4.5 0 00-9 0h-2v-1z"
+                  ></path>
+                </svg>
+                Enable Microphone
+              </button>
             </div>
             <FeedbackForm />
           </div>

@@ -85,3 +85,4 @@ class NIfTIToEmbedding:
 # heart_embedding = embedder.load_nifti_from_base64(base64_nifti)
 
 # print(f"Generated embedding shape: {heart_embedding.shape}")
+
