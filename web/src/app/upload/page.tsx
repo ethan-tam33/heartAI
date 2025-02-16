@@ -138,10 +138,10 @@ export default function UploadPage() {
               console.log(file.name[3])
               let path = '';
               if (file.name[3] == '1') {
-                path = 'pat1_healthy_11yo.html'
+                path = 'pat1_healthy_11yo_segmented.html'
               }
               if (file.name[3] == '3') {
-                path = 'pat3_unhealthy_52yo.html'
+                path = 'pat3_unhealthy_52yo_segmented.html'
               }
               // try{
               //   const response = handleFileUpload(file);
