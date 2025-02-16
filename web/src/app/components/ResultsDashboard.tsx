@@ -56,9 +56,10 @@ export function ResultsDashboard({ diagnosis }: ResultsDashboardProps) {
         {/* Feedback Form */}
         <FeedbackForm />
       </div>
-
+      
+      {/* <div className="col-span-3 flex items-center justify-center bg-white rounded-xl shadow-sm border border-slate-200"> */}
       <div className="col-span-3 flex items-center justify-center bg-white rounded-xl shadow-sm border border-slate-200">
-        <Heart></Heart>
+        <Heart path={"smooth_heart_2.html"}></Heart>
       </div>
     </div>
   )

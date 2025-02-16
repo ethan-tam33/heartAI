@@ -1,12 +1,16 @@
 import React from "react";
 
-export default function Heart() {
+interface HeartProps {
+        path: string;
+    }
+
+export default function Heart({path}: HeartProps) {
     return (
       <div>
         <iframe
-          src="smooth_heart.html"
-          width="600px"
-          height="600px"
+          src={path}
+          width="700px"
+          height="700px"
           style={{ border: "none" }}
         ></iframe>
       </div>
