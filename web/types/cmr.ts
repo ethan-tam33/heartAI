@@ -1,5 +1,5 @@
-// types/ecg.d.ts
-export interface ECGMarker {
+// types/cmr.d.ts
+export interface CMRMarker {
     x: number
     y: number
     width: number
@@ -9,11 +9,11 @@ export interface ECGMarker {
   }
   
   export interface Diagnosis {
-    label: string
+    labels: string[]
     imageUrl: string
     confidence: number
     explanation: string
-    markers: ECGMarker[]
+    markers: CMRMarker[]
   }
   
   export interface SimilarECG {

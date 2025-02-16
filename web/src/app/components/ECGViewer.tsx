@@ -3,11 +3,11 @@
 'use client'
 
 import { useState } from 'react'
-import type { ECGMarker } from '../../../types/ecg'
+import type { CMRMarker } from '../../../types/cmr'
 
 interface ECGViewerProps {
   imageUrl: string
-  markers?: ECGMarker[]
+  markers?: CMRMarker[]
   scale?: number
 }
 
@@ -52,7 +52,7 @@ export function ECGViewer({
     setInternalScale(1)
   }
 
-  const markerColors: Record<ECGMarker['type'], string> = {
+  const markerColors: Record<CMRMarker['type'], string> = {
     'st-elevation': 'rgba(255, 82, 82, 0.8)',
     'q-wave': 'rgba(255, 177, 66, 0.8)',
     arrhythmia: 'rgba(76, 175, 80, 0.8)',

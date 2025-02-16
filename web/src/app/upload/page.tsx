@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Diagnosis, SimilarECG } from '../../../types/ecg'
+import { Diagnosis, SimilarECG } from '../../../types/cmr'
 
 type AnalysisState = {
   status: 'idle' | 'uploading' | 'processing' | 'complete'
@@ -55,7 +55,7 @@ export default function UploadPage() {
                 ...prev,
                 status: 'complete',
                 diagnosis: {
-                  label: 'Atrial Fibrillation',
+                  labels: ['Congenital Heart Defect', 'Ventricular Septal Defect'],
                   imageUrl: fileUrl,
                   confidence: 0.92,
                   explanation:
@@ -77,7 +77,7 @@ export default function UploadPage() {
                     similarity: 0.9,
                     diagnosis: {
                       imageUrl: '/ecg1.jpg',
-                      label: 'Atrial Fibrillation',
+                      labels: ['Atrial Fibrillation'],
                       confidence: 0.9,
                       explanation: 'Baseline irregularities and wave patterns.',
                       markers: [],
@@ -131,7 +131,7 @@ export default function UploadPage() {
 
         {/* Processing Steps */}
         {analysisState.status === 'processing' && (
-          <div>Processing...</div>
+          <div className="text-center text-slate-500">Processing...</div>
         )}
 
         {/* Complete -> Link to results */}
@@ -144,7 +144,7 @@ export default function UploadPage() {
               onClick={handleViewResults}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              View Detailed Results
+              View Results
             </button>
           </div>
         )}
