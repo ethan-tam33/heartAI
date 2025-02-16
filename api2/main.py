@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from embeddings import NIfTIToEmbedding
 from smart_diagnosis import sMaRTDiagnosis
 from create_knowledge_base import ingest_data_from_zip
+from fastapi.middleware.cors import CORSMiddleware
 
 import base64
 app = FastAPI(title="Vespa Embeddings/RAG FastAPI Demo")
@@ -111,16 +112,19 @@ def vespa_search(embeddings):
         "hits": 10,
         "ranking.features.query(query_embedding)": query_embedding
     }
+
+@app.post("/upload")
 def get_all_data(nii_path: str):
     # final api call
-    diagnosis = {
+    print("OMGGGGG")
+    res = {
         "labels": ["Congenital Heart Defect", "Ventricular Septal Defect"],
         "imageUrl": nii_path,
         "confidence": 0.92,
         "explanation": "This is the explanation",
         "severity": "Moderate",
     }
-    return diagnosis
+    return res
 
 def perplexity_call(vespa_output: dict):
     """
