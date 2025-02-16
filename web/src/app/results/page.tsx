@@ -3,7 +3,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-// import { ResultsDashboard } from '@/components/ResultsDashboard'
 import { useRouter } from 'next/navigation'
 import { Diagnosis } from '../../../types/cmr'
 import { ResultsDashboard } from '../components/ResultsDashboard'
