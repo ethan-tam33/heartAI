@@ -59,32 +59,9 @@ export default function UploadPage() {
                   imageUrl: fileUrl,
                   confidence: 0.92,
                   explanation:
-                    'The ECG shows irregularly irregular R-R intervals, absent P waves, and baseline fibrillations consistent with AFib.',
-                  markers: [
-                    {
-                      x: 10,
-                      y: 35,
-                      width: 20,
-                      height: 10,
-                      label: 'Fibrillatory Waves',
-                      type: 'arrhythmia',
-                    },
-                  ],
+                    'The CMR shows irregularly irregular R-R intervals, absent P waves, and baseline fibrillations consistent with AFib.',
+                  severity: 'Moderate',
                 },
-                similarECGs: [
-                  {
-                    imageUrl: '/ecg1.jpg',
-                    similarity: 0.9,
-                    diagnosis: {
-                      imageUrl: '/ecg1.jpg',
-                      labels: ['Atrial Fibrillation'],
-                      confidence: 0.9,
-                      explanation: 'Baseline irregularities and wave patterns.',
-                      markers: [],
-                    },
-                    date: '2025-01-01',
-                  },
-                ],
                 currentStep: '',
               }))
             }, 1500)

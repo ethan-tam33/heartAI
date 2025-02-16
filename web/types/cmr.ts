@@ -13,7 +13,7 @@ export interface CMRMarker {
     imageUrl: string
     confidence: number
     explanation: string
-    markers: CMRMarker[]
+    severity: string
   }
   
   export interface SimilarECG {

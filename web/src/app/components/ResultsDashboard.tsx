@@ -16,6 +16,7 @@ function labelsToString(labels: string[]) {
 }
 
 export function ResultsDashboard({ diagnosis }: ResultsDashboardProps) {
+  console.log(diagnosis)
   return (
     <div className="grid grid-cols-5 gap-8 h-screen p-6">
       {/* Left Column: Diagnosis Confidence, AI Explanation, and Feedback */}
@@ -26,6 +27,7 @@ export function ResultsDashboard({ diagnosis }: ResultsDashboardProps) {
             Diagnosis Confidence
           </h2>
           <div className="space-y-3">
+            <span className="text-slate-800">Severity: {diagnosis.severity}</span>
             <div className="flex items-center justify-between">
               <span className="text-slate-800">{labelsToString(diagnosis.labels)}</span>
               <span className="font-medium text-blue-600">
