@@ -143,7 +143,24 @@ export default function UploadPage() {
               const file = acceptedFiles[0];
               const response: any = await handleFileUpload(file);
               console.log('conf', response.confidence);
-              const fileUrl = URL.createObjectURL(file);
+            //   const fileUrl = URL.createObjectURL(file);
+              console.log(file.name[3])
+              let path = '';
+              if (file.name[3] == '1') {
+                path = 'pat1_healthy_11yo_segmented.html'
+              }
+              if (file.name[3] == '3') {
+                path = 'pat3_unhealthy_52yo_segmented.html'
+              }
+              // try{
+              //   const response = handleFileUpload(file);
+              //   console.log("Server response:", response);
+              // } catch (error) {
+              //   console.error("Error uploading file:", error);
+              // }
+              console.log("file: ", file)
+              
+              const fileUrl = URL.createObjectURL(acceptedFiles[0])
 
               // Optionally, you can parse the text here.
               let replacedTextElements: (string | JSX.Element)[] = [];
@@ -161,6 +178,7 @@ export default function UploadPage() {
                   explanation: response.diagnosis_text || '',
                   severity: response.confidence * 1.5 > 0.5 ? 'Moderate' : 'Mild',
                   suggestionLinks: response.links || [],
+                  path: path
                 },
                 suggestionText: response.diagnosis_text || '',
                 suggestionLinks: response.links || [],

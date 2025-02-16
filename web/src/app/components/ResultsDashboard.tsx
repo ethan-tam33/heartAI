@@ -52,12 +52,15 @@ function parseSuggestionText(text: string, links: string[]): (string | JSX.Eleme
 }
 
 export function ResultsDashboard({ diagnosis }: ResultsDashboardProps) {
+<<<<<<< HEAD
   const [showAgent, setShowAgent] = useState(false);
 
   const handleAgentToggle = () => {
     setShowAgent((prev) => !prev);
   };
 
+=======
+>>>>>>> 7ced819ed02d5ef6d84b41c1865a6936100003bd
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 min-h-screen">
@@ -129,6 +132,7 @@ export function ResultsDashboard({ diagnosis }: ResultsDashboardProps) {
           </div>
         </div>
       </div>
+<<<<<<< HEAD
 
       {/* ElevenLabs Agent Chat Widget (only rendered when showAgent is true) */}
       {showAgent && (
@@ -185,4 +189,12 @@ export function ResultsDashboard({ diagnosis }: ResultsDashboardProps) {
       `}</style>
     </>
   );
+=======
+      
+      <div className="col-span-3 flex items-center justify-center bg-white rounded-xl shadow-sm border border-slate-200">
+        <Heart path={diagnosis.path}></Heart>
+      </div>
+    </div>
+  )
+>>>>>>> 7ced819ed02d5ef6d84b41c1865a6936100003bd
 }

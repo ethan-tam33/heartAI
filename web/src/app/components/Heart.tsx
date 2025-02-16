@@ -9,8 +9,8 @@ export default function Heart({path}: HeartProps) {
       <div>
         <iframe
           src={path}
-          width="700px"
-          height="700px"
+          width="600px"
+          height="600px"
           style={{ border: "none" }}
         ></iframe>
       </div>
