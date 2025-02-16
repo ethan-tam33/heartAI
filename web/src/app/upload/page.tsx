@@ -7,6 +7,7 @@ import { useDropzone } from 'react-dropzone'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Diagnosis } from '../../../types/cmr'
+import { resolve } from 'path'
 
 type AnalysisState = {
   status: 'idle' | 'uploading' | 'processing' | 'complete'
@@ -24,8 +25,87 @@ export default function UploadPage() {
     diagnosis: null,
   })
 
+  const sendBase64ToServer = async (base64String: string): Promise<any> => {
+    try {
+      const response = await fetch("/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({ nii_path: base64String }), 
+      });
+  
+      // Check if the response is successful
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+  
+      // Parse the JSON response from the server
+      const responseData = await response.json();
+      console.log("Server response:", responseData);  // Log or process the JSON data as needed
+      return responseData;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      throw error;
+    }
+  };
+
+  const handleFileUpload = async (file: File): Promise<any> => {
+    if (!file) {
+      throw new Error('No file selected');
+    }
+  
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+  
+      reader.onload = async () => {
+        const base64String = reader.result?.toString().split(",")[1]; // Extract Base64 from Data URL
+        if (!base64String) {
+          reject('Failed to extract Base64 from Data URL');
+          return;
+        }
+        try {
+          const response = await sendBase64ToServer(base64String);
+          resolve(response);
+        } catch (error) {
+          reject(error);
+        }
+      };
+  
+      reader.onerror = () => {
+        reject('Error reading file');
+      };
+  
+      reader.readAsDataURL(file); // Convert file to Base64 string
+    });
+  };
+  
+  // const handleFileUpload = async (file: File): Promise<any> => {
+  //   if (!file) {
+  //     return Promise.reject('No file selected');
+  //   }
+  
+  //   const reader = new FileReader();
+  
+  //   reader.onload = async () => {
+  //     const base64String = reader.result?.toString().split(",")[1]; // Extract Base64 from Data URL
+  //     if (!base64String) {
+  //       return Promise.reject('Failed to extract Base64 from Data URL');
+  //     }
+  //     try {
+  //       const response = await sendBase64ToServer(base64String);
+  //       console.log("Server response:", response);  // Log or process the JSON data as needed
+  //       resolve(response);
+  //     } catch (error) {
+  //       console.error("Error uploading file:", error);
+  //     }
+  //   };
+  
+  //   reader.readAsDataURL(file); // Convert file to Base64 string
+  // };
+  
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    // accept: { 'image/*': [] },
     accept: { 'application/nii': ['.nii'] },
     onDrop: (acceptedFiles) => {
       if (!acceptedFiles.every(file => file.name.endsWith('.nii'))) {
@@ -54,7 +134,16 @@ export default function UploadPage() {
             setAnalysisState((prev) => ({ ...prev, currentStep: 'explanation' }))
             setTimeout(() => {
               // Generate final data
+              const file = acceptedFiles[0];
+              try{
+                const response = handleFileUpload(file);
+                console.log("Server response:", response);
+              } catch (error) {
+                console.error("Error uploading file:", error);
+              }
+              
               const fileUrl = URL.createObjectURL(acceptedFiles[0])
+
               setAnalysisState((prev) => ({
                 ...prev,
                 status: 'complete',
