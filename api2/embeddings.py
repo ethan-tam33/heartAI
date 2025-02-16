@@ -3,6 +3,8 @@ import nibabel as nib
 import numpy as np
 from torch import nn
 from monai.transforms import Compose, Resize, ScaleIntensity, ToTensor
+import base64
+import io
 
 class NIfTIToEmbedding:
     def __init__(self, device='cuda' if torch.cuda.is_available() else 'cpu'):
@@ -54,6 +56,19 @@ class NIfTIToEmbedding:
         data = img.get_fdata()
         return self.preprocess(data[np.newaxis,...])  # Add channel dimension
 
+    def load_nifti_from_base64(self, base64_string):
+        """Load and preprocess NIfTI file from base64 string"""
+        try:
+            # Decode base64 string
+            nifti_data = base64.b64decode(base64_string)
+            
+            # Load NIfTI from bytes
+            img = nib.nifti1.Nifti1Image.from_bytes(nifti_data)
+            data = img.get_fdata()
+            return self.preprocess(data[np.newaxis,...])
+        except Exception as e:
+            raise ValueError(f"Error decoding or loading NIfTI from base64: {e}")
+
     def __call__(self, nii_path):
         with torch.no_grad():
             x = self.load_nifti(nii_path).unsqueeze(0).to(self.device)
@@ -61,7 +76,12 @@ class NIfTIToEmbedding:
             return self.model(x).cpu().numpy()
 
 # Usage
-embedder = NIfTIToEmbedding()
-heart_embedding = embedder("/Users/socratesj.osorio/Development/heartAI/api2/mesh1.nii")
+# embedder = NIfTIToEmbedding()
+# # heart_embedding = embedder("/Users/socratesj.osorio/Development/heartAI/api2/mesh1.nii")
 
-print(f"Generated embedding shape: {heart_embedding.shape}")
+# with open("/Users/socratesj.osorio/Development/heartAI/api2/mesh1.nii", "rb") as nifti_file:
+#     base64_nifti = base64.b64encode(nifti_file.read()).decode('utf-8')
+
+# heart_embedding = embedder.load_nifti_from_base64(base64_nifti)
+
+# print(f"Generated embedding shape: {heart_embedding.shape}")
