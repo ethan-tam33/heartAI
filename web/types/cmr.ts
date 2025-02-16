@@ -14,6 +14,7 @@ export interface CMRMarker {
     confidence: number
     explanation: string
     severity: string
+    path: string
   }
   
   // export interface SimilarECG {

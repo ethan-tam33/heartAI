@@ -135,12 +135,21 @@ export default function UploadPage() {
             setTimeout(() => {
               // Generate final data
               const file = acceptedFiles[0];
-              try{
-                const response = handleFileUpload(file);
-                console.log("Server response:", response);
-              } catch (error) {
-                console.error("Error uploading file:", error);
+              console.log(file.name[3])
+              let path = '';
+              if (file.name[3] == '1') {
+                path = 'pat1_healthy_11yo.html'
               }
+              if (file.name[3] == '3') {
+                path = 'pat3_unhealthy_52yo.html'
+              }
+              // try{
+              //   const response = handleFileUpload(file);
+              //   console.log("Server response:", response);
+              // } catch (error) {
+              //   console.error("Error uploading file:", error);
+              // }
+              console.log("file: ", file)
               
               const fileUrl = URL.createObjectURL(acceptedFiles[0])
 
@@ -154,6 +163,7 @@ export default function UploadPage() {
                   explanation:
                     'The CMR shows irregularly irregular R-R intervals, absent P waves, and baseline fibrillations consistent with AFib.',
                   severity: 'Moderate',
+                  path: path
                 },
                 currentStep: '',
               }))

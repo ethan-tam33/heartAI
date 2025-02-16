@@ -15,7 +15,6 @@ function labelsToString(labels: string[]) {
 }
 
 export function ResultsDashboard({ diagnosis }: ResultsDashboardProps) {
-  console.log(diagnosis)
   return (
     <div className="grid grid-cols-5 gap-8 h-screen p-6">
       {/* Left Column: Diagnosis Confidence, AI Explanation, and Feedback */}
@@ -59,7 +58,7 @@ export function ResultsDashboard({ diagnosis }: ResultsDashboardProps) {
       </div>
       
       <div className="col-span-3 flex items-center justify-center bg-white rounded-xl shadow-sm border border-slate-200">
-        <Heart path={"smooth_heart_2.html"}></Heart>
+        <Heart path={diagnosis.path}></Heart>
       </div>
     </div>
   )
