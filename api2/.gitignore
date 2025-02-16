@@ -1,2 +1,4 @@
 .env.local
 data/
+*.nii
+treehacks/bin
