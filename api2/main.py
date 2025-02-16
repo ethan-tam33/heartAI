@@ -89,10 +89,18 @@ def search(query: str = Query(..., description="Search query text")):
 
 @app.get("/search2", summary="Search clinical data via embedding similarity")
 
+
+@app.get("/getAllData", summary="Get all data given the input NII")
+def get_all_data(nii_path: str):
+    # final api call
+    return
+
+
 # input val check
-def perplexity_call(vespa_output)
+def perplexity_call(vespa_output):
 # json parse
 # perplexity
+    pass
 
 def nii_to_suggestion():
     # call david's stuff to get nii of full heart
@@ -105,6 +113,7 @@ def nii_to_suggestion():
     #     "most_similar_nii" (stretch) as base64
     #     "perplexity": float
     # }
+    pass
 
 if __name__ == "__main__":
     import uvicorn
