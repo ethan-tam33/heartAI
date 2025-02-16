@@ -3,7 +3,6 @@
 'use client'
 
 import { FeedbackForm } from './FeedbackForm'
-import { ECGViewer } from './ECGViewer'
 import type { Diagnosis } from '../../../types/cmr'
 import Heart from './Heart'
 
@@ -59,7 +58,6 @@ export function ResultsDashboard({ diagnosis }: ResultsDashboardProps) {
         <FeedbackForm />
       </div>
       
-      {/* <div className="col-span-3 flex items-center justify-center bg-white rounded-xl shadow-sm border border-slate-200"> */}
       <div className="col-span-3 flex items-center justify-center bg-white rounded-xl shadow-sm border border-slate-200">
         <Heart path={"smooth_heart_2.html"}></Heart>
       </div>
