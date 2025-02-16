@@ -6,14 +6,13 @@ import { useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Diagnosis, SimilarECG } from '../../../types/cmr'
+import { Diagnosis } from '../../../types/cmr'
 
 type AnalysisState = {
   status: 'idle' | 'uploading' | 'processing' | 'complete'
   currentStep: 'embeddings' | 'retrieval' | 'explanation' | ''
   files: File[]
   diagnosis: Diagnosis | null
-  similarECGs: SimilarECG[]
 }
 
 export default function UploadPage() {
@@ -23,7 +22,6 @@ export default function UploadPage() {
     currentStep: '',
     files: [],
     diagnosis: null,
-    similarECGs: [],
   })
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

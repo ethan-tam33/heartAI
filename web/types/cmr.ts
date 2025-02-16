@@ -16,10 +16,10 @@ export interface CMRMarker {
     severity: string
   }
   
-  export interface SimilarECG {
-    imageUrl: string
-    similarity: number
-    diagnosis: Diagnosis
-    date: string
-  }
+  // export interface SimilarECG {
+  //   imageUrl: string
+  //   similarity: number
+  //   diagnosis: Diagnosis
+  //   date: string
+  // }
   
