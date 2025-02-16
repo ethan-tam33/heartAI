@@ -95,7 +95,14 @@ def search(query: str = Query(..., description="Search query text")):
 @app.get("/getAllData", summary="Get all data given the input NII")
 def get_all_data(nii_path: str):
     # final api call
-    return
+    diagnosis = {
+        "labels": ["Congenital Heart Defect", "Ventricular Septal Defect"],
+        "imageUrl": nii_path,
+        "confidence": 0.92,
+        "explanation": "This is the explanation",
+        "severity": "Moderate",
+    }
+    return diagnosis
 
 def perplexity_call(vespa_output: dict):
     """
